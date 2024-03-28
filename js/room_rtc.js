@@ -1,4 +1,4 @@
-const APP_ID = "YOUR-APP-ID"
+const APP_ID = "89c65f9f65f6427c9e060341fca81261"
 
 let uid = sessionStorage.getItem('uid')
 if(!uid){
@@ -6,11 +6,11 @@ if(!uid){
     sessionStorage.setItem('uid', uid)
 }
 
-let token = null;
+let token = null
 let client;
 
-let rtmClient;
-let channel;
+// let rtmClient;
+// let channel;
 
 const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
@@ -31,38 +31,34 @@ let remoteUsers = {}
 let localScreenTracks;
 let sharingScreen = false;
 
+client = AgoraRTC.createClient({mode:'rtc', codec:'vp8'});
+
 let joinRoomInit = async () => {
-    rtmClient = await AgoraRTM.createInstance(APP_ID)
-    await rtmClient.login({uid,token})
+    // rtmClient = await AgoraRTM.createInstance(APP_ID)
+    // await rtmClient.login({uid,token})
 
-    await rtmClient.addOrUpdateLocalUserAttributes({'name':displayName})
+    // await rtmClient.addOrUpdateLocalUserAttributes({'name':displayName})
 
-    channel = await rtmClient.createChannel(roomId)
-    await channel.join()
+    // channel = await rtmClient.createChannel(roomId)
+    // await channel.join()
 
-    channel.on('MemberJoined', handleMemberJoined)
-    channel.on('MemberLeft', handleMemberLeft)
-    channel.on('ChannelMessage', handleChannelMessage)
+    // channel.on('MemberJoined', handleMemberJoined)
+    // channel.on('MemberLeft', handleMemberLeft)
+    // channel.on('ChannelMessage', handleChannelMessage)
 
-    getMembers()
-    addBotMessageToDom(`Welcome to the room ${displayName}! 👋`)
-
-    client = AgoraRTC.createClient({mode:'rtc', codec:'vp8'})
-    await client.join(APP_ID, roomId, token, uid)
-
+    // getMembers()
+    // addBotMessageToDom(`Welcome to the room ${displayName}! 👋`)
     client.on('user-published', handleUserPublished)
     client.on('user-left', handleUserLeft)
-}
+
+    await client.join(APP_ID, roomId, token, uid)
+};
 
 let joinStream = async () => {
     document.getElementById('join-btn').style.display = 'none'
     document.getElementsByClassName('stream__actions')[0].style.display = 'flex'
 
-    localTracks = await AgoraRTC.createMicrophoneAndCameraTracks({}, {encoderConfig:{
-        width:{min:640, ideal:1920, max:1920},
-        height:{min:480, ideal:1080, max:1080}
-    }})
-
+    localTracks = await AgoraRTC.createMicrophoneAndCameraTracks();
 
     let player = `<div class="video__container" id="user-container-${uid}">
                     <div class="video-player" id="user-${uid}"></div>
@@ -242,7 +238,7 @@ let leaveStream = async (e) => {
         }
     }
 
-    channel.sendMessage({text:JSON.stringify({'type':'user_left', 'uid':uid})})
+    // channel.sendMessage({text:JSON.stringify({'type':'user_left', 'uid':uid})})
 }
 
 
